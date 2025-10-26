@@ -304,7 +304,7 @@ refer to the applicable agreement for further details.
 	(rotate90)
 )
 (symbol
-	(rect 648 328 680 376)
+	(rect 648 336 680 384)
 	(text "NOT" (rect 0 27 10 47)(font "Arial" (font_size 6))(vertical))
 	(text "inst8" (rect 21 23 38 45)(font "Intel Clear" )(vertical))
 	(port
@@ -330,7 +330,7 @@ refer to the applicable agreement for further details.
 	(rotate90)
 )
 (symbol
-	(rect 696 328 728 376)
+	(rect 696 336 728 384)
 	(text "NOT" (rect 0 27 10 47)(font "Arial" (font_size 6))(vertical))
 	(text "inst9" (rect 21 23 38 45)(font "Intel Clear" )(vertical))
 	(port
@@ -734,22 +734,6 @@ refer to the applicable agreement for further details.
 	(pt 552 328)
 )
 (connector
-	(pt 728 320)
-	(pt 728 328)
-)
-(connector
-	(pt 728 328)
-	(pt 712 328)
-)
-(connector
-	(pt 648 328)
-	(pt 664 328)
-)
-(connector
-	(pt 648 320)
-	(pt 648 328)
-)
-(connector
 	(pt 824 328)
 	(pt 808 328)
 )
@@ -1081,11 +1065,6 @@ refer to the applicable agreement for further details.
 	(bus)
 )
 (connector
-	(pt 664 464)
-	(pt 712 464)
-	(bus)
-)
-(connector
 	(pt 808 464)
 	(pt 856 464)
 	(bus)
@@ -1225,11 +1204,6 @@ refer to the applicable agreement for further details.
 	(bus)
 )
 (connector
-	(text "direction_i[1]" (rect 640 394 657 455)(font "Intel Clear" )(vertical))
-	(pt 664 376)
-	(pt 664 464)
-)
-(connector
 	(pt 616 328)
 	(pt 632 328)
 )
@@ -1248,16 +1222,6 @@ refer to the applicable agreement for further details.
 	(bus)
 )
 (connector
-	(pt 616 464)
-	(pt 664 464)
-	(bus)
-)
-(connector
-	(text "direction_i[0]" (rect 688 394 705 455)(font "Intel Clear" )(vertical))
-	(pt 712 376)
-	(pt 712 464)
-)
-(connector
 	(text "direction_i[1]" (rect 736 394 753 455)(font "Intel Clear" )(vertical))
 	(pt 760 464)
 	(pt 760 328)
@@ -1271,14 +1235,58 @@ refer to the applicable agreement for further details.
 	(pt 744 328)
 )
 (connector
+	(pt 760 464)
+	(pt 808 464)
+	(bus)
+)
+(connector
+	(text "direction_i[1]" (rect 640 402 657 463)(font "Intel Clear" )(vertical))
+	(pt 664 464)
+	(pt 664 384)
+)
+(connector
+	(pt 616 464)
+	(pt 664 464)
+	(bus)
+)
+(connector
+	(text "direction_i[0]" (rect 688 402 705 463)(font "Intel Clear" )(vertical))
+	(pt 712 464)
+	(pt 712 384)
+)
+(connector
+	(pt 664 464)
+	(pt 712 464)
+	(bus)
+)
+(connector
 	(pt 712 464)
 	(pt 760 464)
 	(bus)
 )
 (connector
-	(pt 760 464)
-	(pt 808 464)
-	(bus)
+	(pt 728 320)
+	(pt 728 328)
+)
+(connector
+	(pt 712 336)
+	(pt 712 328)
+)
+(connector
+	(pt 712 328)
+	(pt 728 328)
+)
+(connector
+	(pt 664 336)
+	(pt 664 328)
+)
+(connector
+	(pt 664 328)
+	(pt 648 328)
+)
+(connector
+	(pt 648 320)
+	(pt 648 328)
 )
 (junction (pt 520 464))
 (junction (pt 568 464))
