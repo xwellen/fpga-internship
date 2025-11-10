@@ -39,7 +39,7 @@ module delay_15_top_tb;
       #10;
     end
     data_input = 0;
-    #20;
+    #50;
     $stop;
   end
 endmodule
