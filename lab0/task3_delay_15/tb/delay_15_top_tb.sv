@@ -1,24 +1,18 @@
 `timescale 1ns / 1ps
 
 module delay_15_top_tb;
-  localparam WIDTH = 8;
+  localparam LEN = 32;
+  localparam MAX_DELAY = 16;
 
-  logic       clk = 0;
-  logic       rst = 1;
-  logic       din;
-  logic [3:0] delay;
-  logic       dout;
+  logic                clk = 0;
+  logic                rst = 1;
+  logic                din;
+  logic          [3:0] delay;
+  logic                dout;
 
-  bit         rst_done = 0;
-
-  typedef struct {
-    logic [WIDTH-1:0] value;
-    int               delay_cycles;
-  } input_info_t;
-
-  input_info_t inputs_q[$];
-
-  logic        outputs [$];
+  bit                  rst_done = 0;
+  int                  check_timeout = 0;
+  mailbox #(bit)       mbx;
 
   delay_15_top DUT (
     .clk_i       (clk),
@@ -27,6 +21,55 @@ module delay_15_top_tb;
     .data_delay_i(delay),
     .data_o      (dout)
   );
+
+  class generator;
+    bit q      [$];
+    bit init_q [$];
+    int delay;
+    int length;
+
+    function new(int length_p);
+      for (int i = 0; i < length_p; i++) begin
+        this.q.push_back($urandom % 2);
+      end
+      this.init_q = q;
+      this.delay  = $urandom % MAX_DELAY;
+      this.length = length_p;
+    endfunction
+
+    function bit next_val();
+      assert (!empty()) begin
+        next_val = q.pop_front();
+      end
+      else begin
+        $error("queue is empty!");
+      end
+    endfunction
+
+    function bit empty();
+      empty = q.size() == 0;
+    endfunction
+  endclass
+
+  class delay_changer;
+    int last_change;
+    int current_delay;
+    function new(int delay_p);
+      this.current_delay = delay_p;
+      this.last_change   = 0;
+    endfunction
+    task change(int delay_p);
+      this.current_delay = delay_p;
+      delay              = delay_p;
+      fork
+        check_timeout = 16;
+        while (check_timeout) begin
+          @(posedge clk);
+          check_timeout--;
+        end
+      join_none
+    endtask
+  endclass
 
   initial forever #5 clk = !clk;
 
@@ -40,36 +83,44 @@ module delay_15_top_tb;
     rst_done = 1;
   end
 
-int rand_val;
-int rand_val_before;
-logic rand_val_q [$];
+
+  generator     g;
+  delay_changer dc;
+
   // Stimulus
+
+  task automatic din_task;
+    g  = new(LEN);
+    dc = new(1);
+    dc.change(4);
+    while (!g.empty()) begin
+      din = g.next_val();
+      @(posedge clk);
+    end
+  endtask
+
+  always @(posedge clk) begin
+    if (mbx.num() > 0) begin
+      if (check_timeout) $display("%t not checking val=%b", $time, mbx.peek());
+      else $display("%t checking val=%b", $time, mbx.peek());
+    end
+  end
+
+  always @(posedge clk) begin
+    mbx.put(din);
+    if (mbx.num() > dc.current_delay) begin
+      mbx.get();
+    end
+  end
+
   initial begin
     $display("Starting test...");
     wait (rst_done);
-    delay = $urandom_range(0, 15);
-    rand_val = $urandom_range(0, 2 ** WIDTH - 1);
-    
-    ##2;
-    repeat (WIDTH + delay + 10) begin
-      din = rand_val % 2;
-      rand_val_q.push_back(din);
-      rand_val >>= 1;
-
-      // Push into tracking queue
-      outputs.push_back(dout);
-
-      @(posedge clk);
-    end
-    #50;
+    fork
+      din_task;
+    join_none
+    #500;
     $display("Test finished.");
-    rand_val_q.reverse();
-    foreach (rand_val_q[i]) $write("%b", rand_val_q[i]);
-    $display();
-    outputs.reverse();
-    repeat(delay) outputs.pop_front();
-    
-    foreach (outputs[i]) $write("%b", outputs[i]);
     $stop;
   end
 
