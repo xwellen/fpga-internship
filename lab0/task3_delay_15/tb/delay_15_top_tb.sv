@@ -12,7 +12,9 @@ module delay_15_top_tb;
 
   bit                  rst_done = 0;
   int                  check_timeout = 0;
-  mailbox #(bit)       mbx;
+
+  bit                  tmp1;
+  bit                  tmp2;
 
   delay_15_top DUT (
     .clk_i       (clk),
@@ -22,59 +24,44 @@ module delay_15_top_tb;
     .data_o      (dout)
   );
 
-  class generator;
-    bit q      [$];
-    bit init_q [$];
-    int delay;
-    int length;
-
-    function new(int length_p);
-      for (int i = 0; i < length_p; i++) begin
-        this.q.push_back($urandom % 2);
-      end
-      this.init_q = q;
-      this.delay  = $urandom % MAX_DELAY;
-      this.length = length_p;
-    endfunction
-
-    function bit next_val();
-      assert (!empty()) begin
-        next_val = q.pop_front();
-      end
-      else begin
-        $error("queue is empty!");
-      end
-    endfunction
-
-    function bit empty();
-      empty = q.size() == 0;
-    endfunction
-  endclass
-
-  class delay_changer;
-    int last_change;
-    int current_delay;
-    function new(int delay_p);
-      this.current_delay = delay_p;
-      this.last_change   = 0;
-    endfunction
-    task change(int delay_p);
-      this.current_delay = delay_p;
-      delay              = delay_p;
-      fork
-        check_timeout = 16;
-        while (check_timeout) begin
-          @(posedge clk);
-          check_timeout--;
-        end
-      join_none
-    endtask
-  endclass
-
   initial forever #5 clk = !clk;
 
   default clocking cb @(posedge clk);
   endclocking
+
+
+
+  class generator;
+    bit q [$];
+    task run();
+      forever begin
+        bit val = $urandom % 2;
+        din = val;
+        q.push_back(val);
+        @(posedge clk);
+      end
+    endtask
+    task print();
+      foreach (this.q[i]) $write("%b", this.q[i]);
+      $display;
+    endtask
+  endclass
+
+  class reader;
+    bit q [$];
+    task run();
+      forever begin
+        q.push_back(dout);
+        @(posedge clk);
+      end
+    endtask
+    task print();
+      foreach (this.q[i]) $write("%b", this.q[i]);
+      $display;
+    endtask
+  endclass
+
+  //==========sim_logic==============
 
   initial begin
     rst = 0;
@@ -83,43 +70,22 @@ module delay_15_top_tb;
     rst_done = 1;
   end
 
-
-  generator     g;
-  delay_changer dc;
-
-  // Stimulus
-
-  task automatic din_task;
-    g  = new(LEN);
-    dc = new(1);
-    dc.change(4);
-    while (!g.empty()) begin
-      din = g.next_val();
-      @(posedge clk);
-    end
-  endtask
-
-  always @(posedge clk) begin
-    if (mbx.num() > 0) begin
-      if (check_timeout) $display("%t not checking val=%b", $time, mbx.peek());
-      else $display("%t checking val=%b", $time, mbx.peek());
-    end
-  end
-
-  always @(posedge clk) begin
-    mbx.put(din);
-    if (mbx.num() > dc.current_delay) begin
-      mbx.get();
-    end
-  end
+  generator gen;
+  reader re;
 
   initial begin
     $display("Starting test...");
+    delay = 4'b0010;
+    gen = new();
+    re = new();
     wait (rst_done);
     fork
-      din_task;
+      gen.run();
+      re.run();
     join_none
     #500;
+    gen.print();
+    re.print();
     $display("Test finished.");
     $stop;
   end
