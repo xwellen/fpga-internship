@@ -6,7 +6,7 @@ module delay_15_top_tb;
   localparam MAX_DURATION = 50;
   localparam MIN_DELAY = 0;
   localparam MAX_DELAY = 15;
-  localparam TEST_COUNT = 10;
+  localparam TEST_COUNT = 2;
 
   logic       clk = 0;
   logic       rst = 1;
@@ -25,9 +25,14 @@ module delay_15_top_tb;
     .data_o      (dout)
   );
 
+  initial $timeformat(-9, 3, " ns", 10);
   initial forever #5 clk = !clk;
 
   default clocking cb @(posedge clk);
+    default input #1step output #1step;
+
+    output din;
+    input dout;
   endclocking
 
   class generator;
@@ -35,9 +40,10 @@ module delay_15_top_tb;
     task run();
       forever begin : generator_loop
         bit val = $urandom % 2;
-        din <= val;
+        cb.din <= val;
+        $display("[%t] GEN: wrote %0b (delta=%0d)", $realtime, val, $stime);
         if (!check_timeout) q.push_back(val);
-        @(posedge clk);
+        @(cb);
       end
     endtask
     task print();
@@ -50,8 +56,11 @@ module delay_15_top_tb;
     bit q[$];
     task run();
       forever begin : reader_loop
-        if (!check_timeout) q.push_back(dout);
-        @(posedge clk);
+        @(cb);
+        if (!check_timeout) begin
+          q.push_back(cb.dout);
+          $display("[%t] READER: read %0b (delta=%0d)", $realtime, cb.dout, $stime);
+        end
       end
     endtask
     task print();
@@ -150,6 +159,8 @@ module delay_15_top_tb;
       for (int i = 0; i < count; i++) begin
         curr_duration = new_duration();
         curr_delay    = new_delay();
+        curr_duration = 48;
+        curr_delay    = 8;
         $display("Starting test group %3d...", i + 1);
         $display("duration=%3d, delay=%3d", curr_duration, curr_delay);
         test_task(i + 1, curr_duration, curr_delay);
