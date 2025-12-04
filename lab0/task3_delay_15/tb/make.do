@@ -9,8 +9,8 @@ vlog -sv delay_15_top_tb.sv
 
 vsim -novopt delay_15_top_tb -L lpm_ver
 
-#add log -r /*
-#add wave -r *
-add log /*
-add wave *
+add log -r /*
+add wave -r *
+#add log /*
+#add wave *
 run -all

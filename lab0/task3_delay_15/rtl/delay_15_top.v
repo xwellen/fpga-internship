@@ -14,7 +14,7 @@
 
 // PROGRAM		"Quartus Prime"
 // VERSION		"Version 18.1.0 Build 625 09/12/2018 SJ Lite Edition"
-// CREATED		"Sat Nov 08 19:46:17 2025"
+// CREATED		"Mon Nov 17 12:51:29 2025"
 
 module delay_15_top(
 	data_i,
@@ -34,120 +34,41 @@ output wire	data_o;
 wire	[3:0] data_delay;
 reg	[15:0] delay;
 wire	[3:0] sel;
+wire	SYNTHESIZED_WIRE_15;
+
+assign	SYNTHESIZED_WIRE_15 = 1;
 
 
 
 
-
-always@(posedge clk_i or negedge rst_i)
-begin
-if (!rst_i)
-	begin
-	delay[0] <= 0;
-	end
-else
-	begin
-	delay[0] <= data_i;
-	end
-end
-
-
-always@(posedge clk_i or negedge rst_i)
+always@(posedge clk_i or negedge rst_i or negedge SYNTHESIZED_WIRE_15)
 begin
 if (!rst_i)
 	begin
 	delay[1] <= 0;
 	end
 else
+if (!SYNTHESIZED_WIRE_15)
 	begin
-	delay[1] <= delay[0];
-	end
-end
-
-
-always@(posedge clk_i or negedge rst_i)
-begin
-if (!rst_i)
-	begin
-	delay[10] <= 0;
+	delay[1] <= 1;
 	end
 else
 	begin
-	delay[10] <= delay[9];
+	delay[1] <= data_i;
 	end
 end
 
 
-always@(posedge clk_i or negedge rst_i)
-begin
-if (!rst_i)
-	begin
-	delay[11] <= 0;
-	end
-else
-	begin
-	delay[11] <= delay[10];
-	end
-end
-
-
-always@(posedge clk_i or negedge rst_i)
-begin
-if (!rst_i)
-	begin
-	delay[12] <= 0;
-	end
-else
-	begin
-	delay[12] <= delay[11];
-	end
-end
-
-
-always@(posedge clk_i or negedge rst_i)
-begin
-if (!rst_i)
-	begin
-	delay[13] <= 0;
-	end
-else
-	begin
-	delay[13] <= delay[12];
-	end
-end
-
-
-always@(posedge clk_i or negedge rst_i)
-begin
-if (!rst_i)
-	begin
-	delay[14] <= 0;
-	end
-else
-	begin
-	delay[14] <= delay[13];
-	end
-end
-
-
-always@(posedge clk_i or negedge rst_i)
-begin
-if (!rst_i)
-	begin
-	delay[15] <= 0;
-	end
-else
-	begin
-	delay[15] <= delay[14];
-	end
-end
-
-
-always@(posedge clk_i or negedge rst_i)
+always@(posedge clk_i or negedge rst_i or negedge SYNTHESIZED_WIRE_15)
 begin
 if (!rst_i)
 	begin
 	delay[2] <= 0;
+	end
+else
+if (!SYNTHESIZED_WIRE_15)
+	begin
+	delay[2] <= 1;
 	end
 else
 	begin
@@ -156,11 +77,106 @@ else
 end
 
 
-always@(posedge clk_i or negedge rst_i)
+always@(posedge clk_i or negedge rst_i or negedge SYNTHESIZED_WIRE_15)
+begin
+if (!rst_i)
+	begin
+	delay[11] <= 0;
+	end
+else
+if (!SYNTHESIZED_WIRE_15)
+	begin
+	delay[11] <= 1;
+	end
+else
+	begin
+	delay[11] <= delay[10];
+	end
+end
+
+
+always@(posedge clk_i or negedge rst_i or negedge SYNTHESIZED_WIRE_15)
+begin
+if (!rst_i)
+	begin
+	delay[12] <= 0;
+	end
+else
+if (!SYNTHESIZED_WIRE_15)
+	begin
+	delay[12] <= 1;
+	end
+else
+	begin
+	delay[12] <= delay[11];
+	end
+end
+
+
+always@(posedge clk_i or negedge rst_i or negedge SYNTHESIZED_WIRE_15)
+begin
+if (!rst_i)
+	begin
+	delay[13] <= 0;
+	end
+else
+if (!SYNTHESIZED_WIRE_15)
+	begin
+	delay[13] <= 1;
+	end
+else
+	begin
+	delay[13] <= delay[12];
+	end
+end
+
+
+always@(posedge clk_i or negedge rst_i or negedge SYNTHESIZED_WIRE_15)
+begin
+if (!rst_i)
+	begin
+	delay[14] <= 0;
+	end
+else
+if (!SYNTHESIZED_WIRE_15)
+	begin
+	delay[14] <= 1;
+	end
+else
+	begin
+	delay[14] <= delay[13];
+	end
+end
+
+
+always@(posedge clk_i or negedge rst_i or negedge SYNTHESIZED_WIRE_15)
+begin
+if (!rst_i)
+	begin
+	delay[15] <= 0;
+	end
+else
+if (!SYNTHESIZED_WIRE_15)
+	begin
+	delay[15] <= 1;
+	end
+else
+	begin
+	delay[15] <= delay[14];
+	end
+end
+
+
+always@(posedge clk_i or negedge rst_i or negedge SYNTHESIZED_WIRE_15)
 begin
 if (!rst_i)
 	begin
 	delay[3] <= 0;
+	end
+else
+if (!SYNTHESIZED_WIRE_15)
+	begin
+	delay[3] <= 1;
 	end
 else
 	begin
@@ -169,11 +185,16 @@ else
 end
 
 
-always@(posedge clk_i or negedge rst_i)
+always@(posedge clk_i or negedge rst_i or negedge SYNTHESIZED_WIRE_15)
 begin
 if (!rst_i)
 	begin
 	delay[4] <= 0;
+	end
+else
+if (!SYNTHESIZED_WIRE_15)
+	begin
+	delay[4] <= 1;
 	end
 else
 	begin
@@ -182,11 +203,16 @@ else
 end
 
 
-always@(posedge clk_i or negedge rst_i)
+always@(posedge clk_i or negedge rst_i or negedge SYNTHESIZED_WIRE_15)
 begin
 if (!rst_i)
 	begin
 	delay[5] <= 0;
+	end
+else
+if (!SYNTHESIZED_WIRE_15)
+	begin
+	delay[5] <= 1;
 	end
 else
 	begin
@@ -195,11 +221,16 @@ else
 end
 
 
-always@(posedge clk_i or negedge rst_i)
+always@(posedge clk_i or negedge rst_i or negedge SYNTHESIZED_WIRE_15)
 begin
 if (!rst_i)
 	begin
 	delay[6] <= 0;
+	end
+else
+if (!SYNTHESIZED_WIRE_15)
+	begin
+	delay[6] <= 1;
 	end
 else
 	begin
@@ -208,11 +239,16 @@ else
 end
 
 
-always@(posedge clk_i or negedge rst_i)
+always@(posedge clk_i or negedge rst_i or negedge SYNTHESIZED_WIRE_15)
 begin
 if (!rst_i)
 	begin
 	delay[7] <= 0;
+	end
+else
+if (!SYNTHESIZED_WIRE_15)
+	begin
+	delay[7] <= 1;
 	end
 else
 	begin
@@ -221,11 +257,16 @@ else
 end
 
 
-always@(posedge clk_i or negedge rst_i)
+always@(posedge clk_i or negedge rst_i or negedge SYNTHESIZED_WIRE_15)
 begin
 if (!rst_i)
 	begin
 	delay[8] <= 0;
+	end
+else
+if (!SYNTHESIZED_WIRE_15)
+	begin
+	delay[8] <= 1;
 	end
 else
 	begin
@@ -234,17 +275,41 @@ else
 end
 
 
-always@(posedge clk_i or negedge rst_i)
+always@(posedge clk_i or negedge rst_i or negedge SYNTHESIZED_WIRE_15)
 begin
 if (!rst_i)
 	begin
 	delay[9] <= 0;
 	end
 else
+if (!SYNTHESIZED_WIRE_15)
+	begin
+	delay[9] <= 1;
+	end
+else
 	begin
 	delay[9] <= delay[8];
 	end
 end
+
+
+always@(posedge clk_i or negedge rst_i or negedge SYNTHESIZED_WIRE_15)
+begin
+if (!rst_i)
+	begin
+	delay[10] <= 0;
+	end
+else
+if (!SYNTHESIZED_WIRE_15)
+	begin
+	delay[10] <= 1;
+	end
+else
+	begin
+	delay[10] <= delay[9];
+	end
+end
+
 
 
 mux161	b2v_mux0(
@@ -263,7 +328,7 @@ mux161	b2v_mux0(
 	.data3(delay[3]),
 	.data2(delay[2]),
 	.data1(delay[1]),
-	.data0(delay[0]),
+	.data0(data_i),
 	.sel(sel),
 	.result(data_o));
 

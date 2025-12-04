@@ -6,7 +6,7 @@ module delay_15_top_tb;
   localparam MAX_DURATION = 50;
   localparam MIN_DELAY = 0;
   localparam MAX_DELAY = 15;
-  localparam TEST_COUNT = 2;
+  localparam TEST_COUNT = 10;
 
   logic       clk = 0;
   logic       rst = 1;
@@ -28,44 +28,51 @@ module delay_15_top_tb;
   initial $timeformat(-9, 3, " ns", 10);
   initial forever #5 clk = !clk;
 
-  default clocking cb @(posedge clk);
-    default input #1step output #1step;
-
-    output din;
-    input dout;
-  endclocking
+  class timedata;
+    time t;
+    logic d;
+    function new(time t_p, logic d_p);
+      this.t = t_p;
+      this.d = d_p;
+    endfunction
+  endclass
 
   class generator;
-    bit q[$];
+    timedata q[$];
     task run();
       forever begin : generator_loop
         bit val = $urandom % 2;
-        cb.din <= val;
-        $display("[%t] GEN: wrote %0b (delta=%0d)", $realtime, val, $stime);
-        if (!check_timeout) q.push_back(val);
-        @(cb);
+        din = val;
+        if (!check_timeout) begin
+          timedata td = new($realtime, din);
+          q.push_back(td);
+        end
+        @(posedge clk);
       end
     endtask
     task print();
-      foreach (this.q[i]) $write("%b", this.q[i]);
-      $display;
+      $display("Generator Log:");
+      foreach (this.q[i]) $display("%4d %0b", this.q[i].t, this.q[i].d);
     endtask
   endclass
 
   class reader;
-    bit q[$];
+    timedata q[$];
+    logic temp_dout;
     task run();
       forever begin : reader_loop
-        @(cb);
+        @(posedge clk);
+        #1;
+        temp_dout = dout;
         if (!check_timeout) begin
-          q.push_back(cb.dout);
-          $display("[%t] READER: read %0b (delta=%0d)", $realtime, cb.dout, $stime);
+          timedata td = new($realtime, temp_dout);
+          q.push_back(td);
         end
       end
     endtask
     task print();
-      foreach (this.q[i]) $write("%b", this.q[i]);
-      $display;
+      $display("Reader Log:");
+      foreach (this.q[i]) $display("%4d %0b", this.q[i].t, this.q[i].d);
     endtask
   endclass
 
@@ -92,7 +99,7 @@ module delay_15_top_tb;
 
     task rst_task();
       rst = 0;
-      ##1;
+      #1;
       rst      = 1;
       rst_done = 1;
     endtask
@@ -106,14 +113,12 @@ module delay_15_top_tb;
       forever @(posedge clk);
     endtask
 
-    function bit check(bit input_q[$], bit output_q[$], int delay_p);
+    function bit check(timedata input_q[$], timedata output_q[$], int delay_p);
       bit result = 1;
       foreach (output_q[i]) begin
-        assert (input_q[i] == output_q[i]) begin
-          $display("bit N=%4d pass, expected=%b, got=%b", i, input_q[i], output_q[i]);
+        assert (input_q[i].d == output_q[i].d) begin
         end
         else begin
-          $error("bit N=%4d mismatch!, expected=%b, got=%b", i, input_q[i], output_q[i]);
           result = 0;
         end
       end
@@ -136,7 +141,7 @@ module delay_15_top_tb;
       disable fork;
       #50;
       gen.print();
-      repeat (delay_p + 1) re.q.pop_front();
+      repeat (delay_p) re.q.pop_front();
       re.print();
 
       check_result = check(gen.q, re.q, delay_p);
@@ -150,7 +155,7 @@ module delay_15_top_tb;
       new_duration = $urandom_range(MIN_DURATION, MAX_DURATION);
     endfunction
 
-    function int new_delay();
+    function bit [3:0] new_delay();
       new_delay = $urandom_range(MIN_DELAY, MAX_DELAY);
     endfunction
 
@@ -159,8 +164,6 @@ module delay_15_top_tb;
       for (int i = 0; i < count; i++) begin
         curr_duration = new_duration();
         curr_delay    = new_delay();
-        curr_duration = 48;
-        curr_delay    = 8;
         $display("Starting test group %3d...", i + 1);
         $display("duration=%3d, delay=%3d", curr_duration, curr_delay);
         test_task(i + 1, curr_duration, curr_delay);
